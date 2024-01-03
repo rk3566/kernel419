@@ -2686,9 +2686,11 @@ void serial8250_do_set_divisor(struct uart_port *port, unsigned int baud,
 
 #ifdef CONFIG_ARCH_ROCKCHIP
 	serial_port_out(port, UART_MCR, up->mcr);
+#if 0	//smiles77
 	if (quot != serial_dl_read(up))
 		pr_warn_ratelimited("ttyS%d set divisor fail, quot:%d != dll,dlh:%d\n",
 					 serial_index(port), quot, serial_dl_read(up));
+#endif
 #endif
 
 	/* XR17V35x UARTs have an extra fractional divisor register (DLD) */

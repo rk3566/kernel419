@@ -171,6 +171,10 @@ static int rtl8211f_config_init(struct phy_device *phydev)
 	if (ret < 0)
 		return ret;
 
+	//phy_write_paged(phydev, 0xd04, 0x10, 0x2360);// smiles77 
+	phy_write_paged(phydev, 0xd04, 0x10, 0x237b);// smiles77 
+	phy_write_paged(phydev, 0xd04, 0x11, 0x0);// smiles77	EEE 에너지 절약모드 off
+	//printk("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ 0x%x\n", phy_read_paged(phydev, 0xd04, 0x10));
 	/* enable TX-delay for rgmii-id and rgmii-txid, otherwise disable it */
 	if (phydev->interface == PHY_INTERFACE_MODE_RGMII_ID ||
 	    phydev->interface == PHY_INTERFACE_MODE_RGMII_TXID)

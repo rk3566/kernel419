@@ -113,6 +113,8 @@ struct edt_ft5x06_ts_data {
 
 	struct edt_reg_addr reg_addr;
 	enum edt_ver version;
+	int screen_x, screen_y; // smiles77 add
+	bool invert;	// smiles77 add
 };
 
 struct edt_i2c_chip_data {
@@ -244,6 +246,13 @@ static irqreturn_t edt_ft5x06_ts_isr(int irq, void *dev_id)
 		y = ((buf[2] << 8) | buf[3]) & 0x0fff;
 		id = (buf[2] >> 4) & 0x0f;
 		down = type != TOUCH_EVENT_UP;
+		// smiles77 add
+		if (tsdata->invert) {
+ 		       //  x = tsdata->screen_x - x;   // smiles77 y좌표만 반전시킴
+            		y = tsdata->screen_y - y;
+        	}
+		//printk("x:%d y:%d id:%d down:%d invert:%d\n", x, y, id, down, tsdata->invert);
+
 
 		input_mt_slot(tsdata->input, id);
 		input_mt_report_slot_state(tsdata->input, MT_TOOL_FINGER, down);
@@ -902,6 +911,15 @@ static void edt_ft5x06_ts_get_defaults(struct device *dev,
 		edt_ft5x06_register_write(tsdata, reg_addr->reg_offset, val);
 		tsdata->offset = val;
 	}
+
+	// smiles77 add
+	if (device_property_read_bool(dev, "invert"))
+        	tsdata->invert = true;
+
+	if (!device_property_read_u32(dev, "screen-x", &val))
+        	tsdata->screen_x= val;
+	if (!device_property_read_u32(dev, "screen-y", &val))
+        	tsdata->screen_y= val;
 }
 
 static void
@@ -1070,6 +1088,15 @@ static int edt_ft5x06_ts_probe(struct i2c_client *client,
 		input_set_abs_params(input, ABS_MT_POSITION_Y,
 				     0, 65535, 0, 0);
 	}
+
+	// 아래의 값 강제로 smiles77
+	input_set_abs_params(input, ABS_X, 0, tsdata->screen_x - 1, 0, 0);
+    	input_set_abs_params(input, ABS_Y, 0, tsdata->screen_y - 1, 0, 0);
+    	input_set_abs_params(input, ABS_MT_POSITION_X,
+                 0, tsdata->screen_x - 1, 0, 0);
+    	input_set_abs_params(input, ABS_MT_POSITION_Y,
+                 0, tsdata->screen_y - 1, 0, 0);
+
 
 	touchscreen_parse_properties(input, true, &tsdata->prop);
 

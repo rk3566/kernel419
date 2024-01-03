@@ -124,7 +124,7 @@
 
 	gpio_leds: gpio-leds {
 		compatible = "gpio-leds";
-		status = "okay";
+		status = "disabled";
 
 		user-led {
 			gpios = <&gpio0 6 GPIO_ACTIVE_HIGH>;
@@ -479,8 +479,8 @@
 			assigned-clock-parents = <&cru I2S1_MCLKOUT_TX>, <&cru I2S1_MCLKOUT_TX>;
 			pinctrl-names = "default";
 			pinctrl-0 = <&i2s1m0_mclk>;
-			hp-volume = <20>;
-			spk-volume = <3>;
+			hp-volume = <0>;
+			spk-volume = <0>;
 			out-l2spk-r2hp;
 			//spk-ctl-gpios = <&gpio0 RK_PA6 GPIO_ACTIVE_HIGH>;
 			status = "okay";
@@ -590,6 +590,19 @@
 	status = "okay";
 	pinctrl-names = "default";
 	pinctrl-0 = <&uart1m0_xfer &uart1m0_ctsn>;
+};
+
+
+&uart3 {
+	status = "okay";
+	pinctrl-names = "default";
+	pinctrl-0 = <&uart3m0_xfer>;
+};
+
+&uart5 {
+	status = "okay";
+	pinctrl-names = "default";
+	pinctrl-0 = <&uart5m1_xfer>;
 };
 
 &gmac1 {

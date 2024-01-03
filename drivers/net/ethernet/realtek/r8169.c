@@ -4025,7 +4025,7 @@ static void rtl_hw_phy_config(struct net_device *dev)
 		break;
 	case RTL_GIGA_MAC_VER_46:
 	case RTL_GIGA_MAC_VER_48:
-		rtl8168h_2_hw_phy_config(tp);
+		rtl8168h_2_hw_phy_config(tp);	// rtl8111h smiles77
 		break;
 
 	case RTL_GIGA_MAC_VER_49:
@@ -4466,6 +4466,7 @@ DECLARE_RTL_COND(rtl_chipcmd_cond)
 
 static void rtl_hw_reset(struct rtl8169_private *tp)
 {
+	//printk("pci rtl_hw_reset\n");
 	RTL_W8(tp, ChipCmd, CmdReset);
 
 	rtl_udelay_loop_wait_low(tp, &rtl_chipcmd_cond, 100, 100);
@@ -5392,6 +5393,7 @@ static void rtl_hw_start_8168h_1(struct rtl8169_private *tp)
 
 	RTL_W32(tp, MISC, RTL_R32(tp, MISC) & ~RXDV_GATED_EN);
 	RTL_W8(tp, MaxTxPacketSize, EarlySize);
+
 
 	rtl_eri_write(tp, 0xc0, ERIAR_MASK_0011, 0x0000, ERIAR_EXGMAC);
 	rtl_eri_write(tp, 0xb8, ERIAR_MASK_0011, 0x0000, ERIAR_EXGMAC);
@@ -7160,6 +7162,7 @@ static void rtl_shutdown(struct pci_dev *pdev)
 	struct net_device *dev = pci_get_drvdata(pdev);
 	struct rtl8169_private *tp = netdev_priv(dev);
 
+	printk("pci shutdown\n");
 	rtl8169_net_suspend(dev);
 
 	/* Restore original MAC address */
@@ -7183,6 +7186,7 @@ static void rtl_remove_one(struct pci_dev *pdev)
 	struct net_device *dev = pci_get_drvdata(pdev);
 	struct rtl8169_private *tp = netdev_priv(dev);
 
+	printk("pci remove\n");
 	if (r8168_check_dash(tp))
 		rtl8168_driver_stop(tp);
 
@@ -7348,6 +7352,7 @@ static void rtl_hw_init_8168g(struct rtl8169_private *tp)
 
 	tp->ocp_base = OCP_STD_PHY_BASE;
 
+	RTL_W16(tp, 0x18, 0xf4f);// smiles77	LINK/ACT, 1000GBPS LED
 	RTL_W32(tp, MISC, RTL_R32(tp, MISC) | RXDV_GATED_EN);
 
 	if (!rtl_udelay_loop_wait_high(tp, &rtl_txcfg_empty_cond, 100, 42))
@@ -7443,6 +7448,7 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 	int chipset, region, i;
 	int jumbo_max, rc;
 
+	printk("pci probe\n");
 	dev = devm_alloc_etherdev(&pdev->dev, sizeof (*tp));
 	if (!dev)
 		return -ENOMEM;
